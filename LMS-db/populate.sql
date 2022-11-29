@@ -1,0 +1,24 @@
+use `lms-db`;
+
+insert into `group` (name) values ('IT20');
+insert into `group` (name) values ('IT21');
+insert into `group` (name) values ('IT22');
+
+
+insert into student (group_id, name, email, password) values (1, 'Ivanov Ivan', 'ivan@mail.ru', '$2b$10$5yXxhbuLB.9ix4ps5j4EQ.L.qItL8iKf/znPhA0ertvxPJN.d/OQ6');
+insert into student (group_id, name, email, password) values (2, 'Petrov Petr', 'petr@mail.ru', '$2b$10$5yXxhbuLB.9ix4ps5j4EQ.L.qItL8iKf/znPhA0ertvxPJN.d/OQ6');
+insert into student (group_id, name, email, password) values (2, 'Sidorov Sidor', 'sidor@mailru', '$2b$10$5yXxhbuLB.9ix4ps5j4EQ.L.qItL8iKf/znPhA0ertvxPJN.d/OQ6');
+
+insert into test (name, teacher_id, group_id, start_time, end_time) values ('Test 1', 1, 1, '2021-01-01 00:00:00', '2021-01-01 00:00:00');
+insert into test (name, teacher_id, group_id, start_time, end_time) values ('Test 2', 1, 1, '2021-01-01 00:00:00', '2021-01-01 00:00:00');
+insert into test (name, teacher_id, group_id, start_time, end_time) values ('Test 3', 1, 1, '2022-01-01 00:00:00', '2023-01-01 00:00:00');
+
+
+insert into question (text, answer, test_id) values ('2+2', '4', 1);
+insert into question (text, answer, test_id) values ('2+3', '5', 1);
+insert into question (text, answer, test_id) values ('2+4', '6', 1);
+insert into question (text, answer, test_id) values ('2+5', '7', 1);
+insert into question (text, answer, test_id) values ('2+2', '4', 2);
+insert into question (text, answer, test_id) values ('2+3', '5', 2);
+insert into question (text, answer, test_id) values ('2+4', '6', 2);
+
