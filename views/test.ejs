@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Test</title>
+</head>
+<body>
+    <h1>Test</h1>
+    <p>Start time: <%= test.start_time %></p>
+    <p>End time: <%= test.end_time %></p>
+    <form action="/test" method="POST">
+        <% for (let i = 0; i < questions.length; i++) { %>
+            <div class="form-group row">
+                <label for="question<%= i %>" class="col-sm-2 col-form-label"><%= questions[i].question %></label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="question<%= i %>" name="question<%= i %>" placeholder="Enter answer">
+                </div>
+            </div>
+        <% } %>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</body>
+</html>
