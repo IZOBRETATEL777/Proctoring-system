@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Top Students</title>
+</head>
+<body>
+    <div class="container">
+        <!-- input field to select number of students -->
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group mt-5">
+                    <form action="/top_students" method="POST">
+                        <label for="number_of_students">Number of students</label>
+                        <input type="number" class="form-control" id="number_of_students" name="number_of_students"
+                            placeholder="Enter number of students" value="<%=students.length %>">
+                        <button type="submit" class="btn btn-primary mt-3">Show</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Student Name</th>
+                            <th scope="col">Student Email</th>
+                            <th scope="col">Student Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (let i = 0; i < students.length; i++) { %>
+                        <tr>
+                            <td><%= students[i].name %></td>
+                            <td><%= students[i].email %></td>
+                            <td><%= students[i].rating %></td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+</body>
+</html>

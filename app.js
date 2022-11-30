@@ -249,9 +249,82 @@ app.post('/question_list', function (req, res) {
 });
 
 
+app.get('/student_rating', function (req, res) {
+    if (req.session.loggedin && req.session.role == 'teacher') {
+        conn.query('call get_the_best_n_students_in_grup(?)', [10], function (err, results, fields) {
+            if (err) throw err;
+            res.render('student_rating', { students: results });
+        });
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+
+app.post('/student_rating', function (req, res) {
+    var number_of_students = req.body.number_of_students;
+    if (req.session.loggedin && req.session.role == 'teacher') {
+        conn.query('call get_the_best_n_students_in_grup(?)', [number_of_students], function (err, results, fields) {
+            if (err) throw err;
+            res.render('student_rating', { students: results });
+        });
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+app.get('/student_list', function (req, res) {
+    if (req.session.loggedin && req.session.role == 'teacher') {
+        conn.query('SELECT * FROM student', function (err, results, fields) {
+            if (err) throw err;
+            res.render('student_list', { students: results });
+        });
+    } else {
+        res.sendStatus(403);
+    }
+});
+
 app.get('/logout', function (req, res) {
     req.session.destroy();
-    res.send('<h1>Bye!</h1>');
+    res.render('index');
+});
+
+app.get("/group_edit", function (req, res) {
+    if (req.session.loggedin && req.session.role == 'teacher') {
+        conn.query('SELECT * FROM `group`', function (err, results, fields) {
+            if (err) throw err;
+            res.render('group_edit', { groups: results });
+        });
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+app.post("/group_edit", function (req, res) {
+    if (req.session.loggedin && req.session.role == 'teacher') {
+        var group_id = req.body.id;
+        var group_name = req.body.name;
+        var action = req.body.action;
+        if (action == 'delete') {
+            conn.query('DELETE FROM `group` WHERE id = ?', [group_id], function (err, results, fields) {
+                if (err) throw err;
+            });
+        } else if (action == 'update') {
+            conn.query('UPDATE `group` SET name = ? WHERE id = ?', [group_name, group_id], function (err, results, fields) {
+                if (err) throw err;
+            });
+        } else if (action == 'create') {
+            conn.query('INSERT INTO `group` (name) VALUES (?)', [group_name], function (err, results, fields) {
+                if (err) throw err;
+            });
+        }
+        conn.query('SELECT * FROM `group`', function (err, results, fields) {
+            if (err) throw err;
+            res.render('group_edit', { groups: results });
+        });
+    } else {
+        res.sendStatus(403);
+    }
 });
 
 
