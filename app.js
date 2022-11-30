@@ -23,7 +23,7 @@ conn.connect((err) => {
 });
 
 app.get('/', function (req, res) {
-    res.send('Hello World!');
+    res.render('index');
 });
 
 app.get('/login', function (req, res) {
