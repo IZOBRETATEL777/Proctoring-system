@@ -83,7 +83,6 @@ create table achievement (
 create table achievement_student (
     achievement_id int not null,
     student_id int not null,
-    primary key (achievement_id, student_id),
     foreign key (achievement_id) references achievement(id),
     foreign key (student_id) references student(id)
 );
@@ -97,6 +96,8 @@ begin
                                  in (select id from test where group_id = get_group_id(student_id))
     and end_time > now() 
     and start_time < now()
+    and id not in (select test_id from test_student where student_id = student_id)
+    order by end_time desc
                        limit 1;
 end$$
 delimiter ;
@@ -104,13 +105,6 @@ delimiter ;
 
 
 -- procedure that returns questions for the given test id
-delimiter $$
-create procedure get_questions_for_test (in test_id int)
-begin 
-    select * from question where id
-                                 in (select question_id from test_question where test_id = test_id);
-end$$
-delimiter ;
 # call get_questions_for_test(3);
 
 -- procedure that returns achievements for the given student id
