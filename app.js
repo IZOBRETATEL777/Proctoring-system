@@ -9,7 +9,7 @@ const { body, validationResult } = require('express-validator');
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: true, cookie: { secure: false, maxAge: 60000 } }));
+app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: true, cookie: { secure: false, maxAge: 60 * 60 * 1000 } }));
 
 var conn = mysql.createConnection({
     host: process.env.HOST,
@@ -99,7 +99,7 @@ app.post('/register',
                 if (err) throw err;
                 conn.query('INSERT INTO teacher (name, email, password) VALUES (?, ?, ?)', [name, email, hash], function (err, results, fields) {
                     if (err) throw err;
-                    res.render('login', {errors: ['Registered successfully']});
+                    res.render('login', { errors: ['Registered successfully'] });
                 });
             });
         }
@@ -110,7 +110,7 @@ app.get('/add_student', function (req, res) {
     if (req.session.loggedin && req.session.role == 'teacher') {
         conn.query('SELECT * FROM `group`', function (err, results, fields) {
             if (err) throw err;
-            res.render('add_student', { groups: results});
+            res.render('add_student', { groups: results });
         });
     } else {
         res.sendStatus(403);
@@ -137,11 +137,44 @@ app.post('/add_student', function (req, res) {
 
 app.get('/test', function (req, res) {
     if (req.session.loggedin && req.session.role == 'student') {
-        conn.query('call get_latest_test(' + req.session.user_id + ')', function (err, results, fields) {
+        conn.query('SELECT * FROM test_student WHERE student_id = ?', [req.session.user_id], function (err, results, fields) {
             if (err) throw err;
-            conn.query('call get_questions_for_test(' + results[0][0].id + ')', function (err, questions, fields) {
+            if (results.length > 0) {
+                // you already passed the tes warning   
+                res.send('<h1>You already passed the test</h1>');
+            }
+            else {
+                conn.query('call get_latest_test(' + req.session.user_id + ')', function (err, results, fields) {
+                    if (err) throw err;
+                    conn.query('call get_questions_for_test(' + results[0][0].id + ')', function (err, questions, fields) {
+                        if (err) throw err;
+                        res.render('test', { test: results[0][0], questions: questions[0] });
+                    });
+                });
+            }
+        });
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+app.post('/test', function (req, res) {
+    if (req.session.loggedin && req.session.role == 'student') {
+        var answers = req.body.answers;
+        var test_id = req.body.test_id;
+        var student_id = req.session.user_id;
+        conn.query('call get_questions_for_test(' + test_id + ')', function (err, questions, fields) {
+            if (err) throw err;
+            var correct_answers = 0;
+            for (var i = 0; i < questions[0].length; i++) {
+                if (questions[0][i].answer == answers[i]) {
+                    correct_answers++;
+                }
+            }
+            var result = (correct_answers / questions[0].length) * 100;
+            conn.query('INSERT INTO test_student (test_id, student_id, result) VALUES (?, ?, ?)', [test_id, student_id, result], function (err, results, fields) {
                 if (err) throw err;
-                res.render('test', { test: results[0][0], questions: questions[0] });
+                res.render('test_results', { correct_answers: correct_answers, total_questions: questions[0].length });
             });
         });
     } else {
@@ -189,7 +222,28 @@ app.get('/question_list', function (req, res) {
 
 app.post('/question_list', function (req, res) {
     if (req.session.loggedin && req.session.role == 'teacher') {
-        console.log(req.body);
+        var questions = req.body.questions;
+        if (typeof (questions) != 'array') {
+            questions = [questions];
+        }
+        var testName = req.body.test_name;
+        var group = req.body.group;
+        var teacherId = req.session.user_id;
+        var startTime = req.body.start_time;
+        var endTime = req.body.end_time;
+
+        conn.query('INSERT INTO test (name, group_id, teacher_id, start_time, end_time) VALUES (?, ?, ?, ?, ?)', [testName, group, teacherId, startTime, endTime], function (err, results, fields) {
+            if (err) throw err;
+            var testId = results.insertId;
+            for (var i = 0; i < questions.length; i++) {
+                if (questions[i] != null) {
+                    conn.query('INSERT INTO test_question (test_id, question_id) VALUES (?, ?)', [testId, questions[i]], function (err, results, fields) {
+                        if (err) throw err;
+                    });
+                }
+            }
+            res.render('dashboard', { name: req.session.name });
+        });
     } else {
         res.sendStatus(403);
     }

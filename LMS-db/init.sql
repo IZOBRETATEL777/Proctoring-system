@@ -2,9 +2,6 @@ drop database if exists `lms-db`;
 create database `lms-db`;
 use `lms-db`;
 
--- function: get_the_best_n_students_in_grup, get_average_test_score, get_excellent_student
-
-
 create table student (
     id int not null auto_increment,
     group_id int not null,
@@ -45,15 +42,12 @@ create table question (
     id int not null auto_increment,
     text varchar(255) not null,
     answer varchar(255) not null,
-    test_id int not null,
-    primary key (id),
-    foreign key (test_id) references test(id)
+    primary key (id)
 );
 
 create table test_question (
     test_id int not null,
     question_id int not null,
-    result float not null,
     primary key (test_id, question_id),
     foreign key (test_id) references test(id),
     foreign key (question_id) references question(id)
@@ -67,6 +61,16 @@ create table test_student (
     primary key (test_id, student_id),
     foreign key (test_id) references test(id),
     foreign key (student_id) references student(id)
+);
+
+create table answer (
+    id int not null auto_increment,
+    student_id int not null,
+    question_id int not null,
+    text varchar(255) not null,
+    primary key (id),
+    foreign key (student_id) references student(id),
+    foreign key (question_id) references question(id)
 );
 
 create table achievement (
@@ -101,7 +105,8 @@ delimiter ;
 delimiter $$
 create procedure get_questions_for_test (in test_id int)
 begin 
-    select * from question where question.test_id = test_id;
+    select * from question where id
+                                 in (select question_id from test_question where test_id = test_id);
 end$$
 delimiter ;
 # call get_questions_for_test(3);
