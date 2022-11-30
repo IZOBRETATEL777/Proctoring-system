@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>List of students</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1>Students edit</h1>
+                <form action="/student_edit" method="POST">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
+                        <label for="name">Email</label>
+                        <input type="text" class="form-control" id="email" name="email" placeholder="Enter email">
+                        <label for="name">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+                        <label for="group">Group</label>
+                        <select class="form-control" id="group" name="group">
+                            <% for (let i = 0; i < groups.length; i++) { %>
+                            <option value="<%= groups[i].id %>"><%= groups[i].name %></option>
+                            <% } %>
+                        </select>
+                        <input type="hidden" name="action" value="create">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add student</button>
+                </form>
+                <br>
+                <h3>Students</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Student Name</a></th>
+                            <th scope="col">Student Email</a></th>
+                            <th scope="col">Group</a></th>
+                            <th scope="col">Actions</a></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (let i=0; i < students.length; i++) { %>
+                            <tr>
+                                <form action="/student_edit" method="POST">
+                                    <td>
+                                        <input type="text" value="<%= students[i].name %>" name="name">
+                                    </td>
+                                    <td>
+                                        <input type="text" value="<%= students[i].email %>" name="email">
+                                    </td>
+                                    <td>
+                                        <select class="form-control" id="group" name="group">
+                                            <% for (let j = 0; j < groups.length; j++) { %>
+                                                <!-- if student group id is the same -->
+                                                <% if (students[i].group_id == groups[j].id) { %>
+                                                    <option value="<%= groups[j].id %>" selected><%= groups[j].name %></option>
+                                                <% } else { %>
+                                                    <option value="<%= groups[j].id %>"><%= groups[j].name %></option>
+                                                <% } %>
+                                            <% } %>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="hidden" name="id" value="<%= students[i].id %>">
+                                        <input type="hidden" name="action" value="update"
+                                            id="action_<%= students[i].id %>">
+                                        <button type="submit" class="btn btn-primary"
+                                            onclick="update_item(<%= students[i].id %>)">Update</button>
+                                        <button type="submit" class="btn btn-danger"
+                                            onclick="delete_item(<%= students[i].id %>)">Delete</button>
+
+                                    </td>
+                                </form>
+                            </tr>
+                            <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <script>
+            function delete_item(id) {
+                document.getElementById("action_" + id).value = "delete";
+            }
+            function update_item(id) {
+                document.getElementById("action_" + id).value = "update";
+            }
+        </script>
+</body>
+
+</html>

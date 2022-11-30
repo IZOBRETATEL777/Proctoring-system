@@ -106,35 +106,6 @@ app.post('/register',
     }
 );
 
-app.get('/add_student', function (req, res) {
-    if (req.session.loggedin && req.session.role == 'teacher') {
-        conn.query('SELECT * FROM `group`', function (err, results, fields) {
-            if (err) throw err;
-            res.render('add_student', { groups: results });
-        });
-    } else {
-        res.sendStatus(403);
-    }
-});
-
-app.post('/add_student', function (req, res) {
-    if (req.session.loggedin && req.session.role == 'teacher') {
-        var name = req.body.name;
-        var email = req.body.email;
-        var password = req.body.password;
-        var group = req.body.group;
-        bcrypt.hash(password, 10, function (err, hash) {
-            if (err) throw err;
-            conn.query('INSERT INTO student (name, email, password, group_id) VALUES (?, ?, ?, ?)', [name, email, hash, group], function (err, results, fields) {
-                if (err) throw err;
-                res.render('dashboard', { name: req.session.name });
-            });
-        });
-    } else {
-        res.sendStatus(403);
-    }
-});
-
 app.get('/test', function (req, res) {
     if (req.session.loggedin && req.session.role == 'student') {
         conn.query('SELECT * FROM test_student WHERE student_id = ?', [req.session.user_id], function (err, results, fields) {
@@ -273,12 +244,66 @@ app.post('/student_rating', function (req, res) {
     }
 });
 
-app.get('/student_list', function (req, res) {
+app.get('/student_edit', function (req, res) {
     if (req.session.loggedin && req.session.role == 'teacher') {
         conn.query('SELECT * FROM student', function (err, results, fields) {
             if (err) throw err;
-            res.render('student_list', { students: results });
+            conn.query('SELECT * FROM `group`', function (err, groups, fields) {
+                if (err) throw err;
+                res.render('student_edit', { students: results, groups: groups });
+            });
         });
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+app.post('/student_edit', function (req, res) {
+    if (req.session.loggedin && req.session.role == 'teacher') {
+        var id = req.body.id;
+        var name = req.body.name;
+        var email = req.body.email;
+        var group = req.body.group;
+        var password = req.body.password;
+        var action = req.body.action;
+
+        if (action == 'delete') {
+            conn.query('DELETE FROM student WHERE id = ?', [id], function (err, results, fields) {
+                if (err) throw err;
+                conn.query('SELECT * FROM student', function (err, results, fields) {
+                    if (err) throw err;
+                    conn.query('SELECT * FROM `group`', function (err, groups, fields) {
+                        if (err) throw err;
+                        res.render('student_edit', { students: results, groups: groups });
+                    });
+                });
+            });
+        } else if (action == 'update') {
+            conn.query('UPDATE student SET name = ?, email = ?, group_id = ? WHERE id = ?', [name, email, group, id], function (err, results, fields) {
+                if (err) throw err;
+                conn.query('SELECT * FROM student', function (err, results, fields) {
+                    if (err) throw err;
+                    conn.query('SELECT * FROM `group`', function (err, groups, fields) {
+                        if (err) throw err;
+                        res.render('student_edit', { students: results, groups: groups });
+                    });
+                });
+            });
+        } else if (action == 'create') {
+            bcrypt.hash(password, 10, function (err, hash) {
+                conn.query('INSERT INTO student (name, email, group_id, password) VALUES (?, ?, ?, ?)', [name, email, group, hash], function (err, results, fields) {
+                    if (err) throw err;
+                    conn.query('SELECT * FROM student', function (err, results, fields) {
+                        if (err) throw err;
+                        conn.query('SELECT * FROM `group`', function (err, groups, fields) {
+                            if (err) throw err;
+                            res.render('student_edit', { students: results, groups: groups });
+                        });
+                    });
+                });
+            });
+        }
+
     } else {
         res.sendStatus(403);
     }
