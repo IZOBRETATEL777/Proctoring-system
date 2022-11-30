@@ -74,8 +74,10 @@ create table answer (
 );
 
 create table achievement (
-    id int not null primary key,
-    title varchar(255)
+    id int not null auto_increment,
+    title varchar(255),
+    description varchar(255),
+    primary key (id)
 );
 
 create table achievement_student (
@@ -152,6 +154,26 @@ end$$
 delimiter ;
 
 
+-- function that returns the best student in the group
+delimiter $$
+create function get_the_best_student_in_group (group_id int)
+returns varchar(255)
+DETERMINISTIC
+begin 
+    declare name varchar(255);
+    select student.name into name from student
+    join test_student on student.id = test_student.student_id
+    join test on test_student.test_id = test.id
+    where test.group_id = group_id
+    group by student.id
+    order by sum(test_student.result) desc
+    limit 1;
+    return name;
+end$$
+delimiter ;
+
+# select get_the_best_student_in_group(4);
+
 -- trigger that checks if the student is registered
 delimiter $$
 create trigger check_registered_student before insert on student
@@ -185,4 +207,28 @@ begin
     end if;
 end$$
 delimiter ;
+
+-- trigger that give ace achievment to the student
+delimiter $$
+create trigger give_ace_achievement after insert on test_student
+for each row
+begin
+    if new.result = 1 then
+        insert into achievement_student (achievement_id, student_id) values (2, new.student_id);
+    end if;
+end$$
+delimiter ;
+
+
+-- trigger that give the best student achievment to the student in the group
+delimiter $$
+create trigger give_the_best_student_achievement after insert on test_student
+for each row
+begin
+    if new.student_id = (select id from student where name = get_the_best_student_in_group(get_group_id(new.student_id))) then
+        insert into achievement_student (achievement_id, student_id) values (1, new.student_id);
+    end if;
+end$$
+delimiter ;
+
 

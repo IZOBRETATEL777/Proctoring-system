@@ -5,6 +5,10 @@ insert into `group` (name) values ('IT21');
 insert into `group` (name) values ('IT22');
 
 
+-- populate achievements table
+insert into achievement (title, `description`) values ('First place', 'First place in the group');
+insert into achievement (title, `description`) values ('Ace', 'All tests passed');
+
 insert into student (group_id, name, email, password) values (1, 'Ivanov Ivan', 'ivan@mail.ru', '$2b$10$5yXxhbuLB.9ix4ps5j4EQ.L.qItL8iKf/znPhA0ertvxPJN.d/OQ6');
 insert into student (group_id, name, email, password) values (2, 'Petrov Petr', 'petr@mail.ru', '$2b$10$5yXxhbuLB.9ix4ps5j4EQ.L.qItL8iKf/znPhA0ertvxPJN.d/OQ6');
 insert into student (group_id, name, email, password) values (2, 'Sidorov Sidor', 'sidor@mailru', '$2b$10$5yXxhbuLB.9ix4ps5j4EQ.L.qItL8iKf/znPhA0ertvxPJN.d/OQ6');
