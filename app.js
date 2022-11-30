@@ -140,7 +140,6 @@ app.get('/test', function (req, res) {
         conn.query('SELECT * FROM test_student WHERE student_id = ?', [req.session.user_id], function (err, results, fields) {
             if (err) throw err;
             if (results.length > 0) {
-                // you already passed the tes warning   
                 res.send('<h1>You already passed the test</h1>');
             }
             else {
