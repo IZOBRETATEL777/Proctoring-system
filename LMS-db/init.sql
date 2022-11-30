@@ -128,7 +128,7 @@ begin
     limit n;
 end$$
 delimiter ;
-
+call get_the_best_n_students_in_grup(20);
 -- function that returns group id for the given student id
 delimiter $$
 create function get_group_id (student_id int)

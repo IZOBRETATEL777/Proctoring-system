@@ -234,7 +234,7 @@ app.get('/student_rating', function (req, res) {
     if (req.session.loggedin && req.session.role == 'teacher') {
         conn.query('call get_the_best_n_students_in_grup(?)', [10], function (err, results, fields) {
             if (err) throw err;
-            res.render('student_rating', { students: results });
+            res.render('student_rating', { students: results[0] });
         });
     } else {
         res.redirect('/login');
@@ -247,7 +247,7 @@ app.post('/student_rating', function (req, res) {
     if (req.session.loggedin && req.session.role == 'teacher') {
         conn.query('call get_the_best_n_students_in_grup(?)', [number_of_students], function (err, results, fields) {
             if (err) throw err;
-            res.render('student_rating', { students: results });
+            res.render('student_rating', { students: results[0] });
         });
     } else {
         res.redirect('/login');
