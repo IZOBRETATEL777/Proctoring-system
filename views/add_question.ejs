@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,18 +9,22 @@
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Add question</title>
 </head>
+
 <body>
-    <h1>Add question</h1>
-    <form action="/add_question" method="POST">
-        <div class="form-group">
-            <label for="question">Question</label>
-            <input type="text" class="form-control" id="question" name="question" placeholder="Enter question">
-        </div>
-        <div class="form-group">
-            <label for="answer">Answer</label>
-            <input type="text" class="form-control" id="answer" name="answer" placeholder="Enter answer">
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    <div class="container">
+        <h1>Add question</h1>
+        <form action="/add_question" method="POST">
+            <div class="form-group">
+                <label for="question">Question</label>
+                <textarea type="text" class="form-control" id="question" name="question" placeholder="Enter question" rows="10"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="answer">Answer</label>
+                <input type="text" class="form-control" id="answer" name="answer" placeholder="Enter answer">
+            </div>
+            <button type="submit" class="btn btn-primary float-right">Add question</button>
+        </form>
+    </div>
 </body>
+
 </html>
