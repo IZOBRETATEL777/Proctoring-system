@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var dotenv = require('dotenv').config();
 var bcrypt = require('bcrypt');
+var moment = require('moment');
 const { body, validationResult } = require('express-validator');
 
 app.set('view engine', 'ejs');
@@ -106,26 +107,35 @@ app.post('/register',
     }
 );
 
+app.get('/dashboard', function (req, res) {
+    if (req.session.loggedin && req.session.role == 'teacher') {
+        res.render('dashboard', { name: req.session.name });
+    }
+    else {
+        res.redirect('/login');
+    }
+});
+
 app.get('/test', function (req, res) {
     if (req.session.loggedin && req.session.role == 'student') {
-        conn.query('SELECT * FROM test_student WHERE student_id = ?', [req.session.user_id], function (err, results, fields) {
+        conn.query('call get_latest_test(?)', [req.session.user_id], function (err, results, fields) {
             if (err) throw err;
-            if (results.length > 0) {
-                res.send('<h1>You already passed the test</h1>');
-            }
-            else {
-                conn.query('call get_latest_test(' + req.session.user_id + ')', function (err, results, fields) {
-                    if (err) throw err;
-                    conn.query('call get_questions_for_test(' + results[0][0].id + ')', function (err, questions, fields) {
+            conn.query('SELECT * FROM test_student WHERE test_id = ? AND student_id = ?', [results[0][0].id, req.session.user_id], function (err, results2, fields) {
+                if (err) throw err;
+                if (results2.length > 0) {
+                    res.redirect('/student_profile');
+                }
+                else {
+                    conn.query('call get_questions_for_test(?)', [results[0][0].id], function (err, questions, fields) {
                         if (err) throw err;
                         res.render('test', { test: results[0][0], questions: questions[0] });
                     });
-                });
-            }
+                }
+            });
         });
-    } else {
-        res.sendStatus(403);
-    }
+        } else {
+            res.redirect('/login');
+        }
 });
 
 app.post('/test', function (req, res) {
@@ -148,7 +158,7 @@ app.post('/test', function (req, res) {
             });
         });
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
     }
 });
 
@@ -157,7 +167,7 @@ app.get('/add_question', function (req, res) {
     if (req.session.loggedin && req.session.role == 'teacher') {
         res.render('add_question');
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
     }
 });
 
@@ -170,7 +180,7 @@ app.post('/add_question', function (req, res) {
             res.render('dashboard', { name: req.session.name });
         });
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
     }
 });
 
@@ -186,7 +196,7 @@ app.get('/question_list', function (req, res) {
             );
         });
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
     }
 });
 
@@ -205,9 +215,9 @@ app.post('/question_list', function (req, res) {
         conn.query('INSERT INTO test (name, group_id, teacher_id, start_time, end_time) VALUES (?, ?, ?, ?, ?)', [testName, group, teacherId, startTime, endTime], function (err, results, fields) {
             if (err) throw err;
             var testId = results.insertId;
-            for (var i = 0; i < questions.length; i++) {
-                if (questions[i] != null) {
-                    conn.query('INSERT INTO test_question (test_id, question_id) VALUES (?, ?)', [testId, questions[i]], function (err, results, fields) {
+            for (var i = 0; i < questions[0].length; i++) {
+                if (questions[0][i] != null) {
+                    conn.query('INSERT INTO test_question (test_id, question_id) VALUES (?, ?)', [testId, questions[0][i]], function (err, results, fields) {
                         if (err) throw err;
                     });
                 }
@@ -215,7 +225,7 @@ app.post('/question_list', function (req, res) {
             res.render('dashboard', { name: req.session.name });
         });
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
     }
 });
 
@@ -227,7 +237,7 @@ app.get('/student_rating', function (req, res) {
             res.render('student_rating', { students: results });
         });
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
     }
 });
 
@@ -240,7 +250,7 @@ app.post('/student_rating', function (req, res) {
             res.render('student_rating', { students: results });
         });
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
     }
 });
 
@@ -254,7 +264,7 @@ app.get('/student_edit', function (req, res) {
             });
         });
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
     }
 });
 
@@ -305,7 +315,7 @@ app.post('/student_edit', function (req, res) {
         }
 
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
     }
 });
 
@@ -321,7 +331,7 @@ app.get("/group_edit", function (req, res) {
             res.render('group_edit', { groups: results });
         });
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
     }
 });
 
@@ -348,7 +358,27 @@ app.post("/group_edit", function (req, res) {
             res.render('group_edit', { groups: results });
         });
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
+    }
+});
+
+app.get('/student_profile', function (req, res) {
+    if (req.session.loggedin && req.session.role == 'student') {
+        conn.query('SELECT * FROM student WHERE id = ?', [req.session.user_id], function (err, student, fields) {
+            if (err) throw err;
+            conn.query('SELECT * FROM `group` WHERE id = ?', [student[0].group_id], function (err, group, fields) {
+                if (err) throw err;
+                conn.query('SELECT * FROM test_student WHERE student_id = ?', [req.session.user_id], function (err, results, fields) {
+                    if (err) throw err;
+                    conn.query('call get_achievements_for_student(?)', [req.session.user_id], function (err, achievements, fields) {
+                        if (err) throw err;
+                        res.render('student_profile', { student: student[0], group: group[0].name, results: results, achievements: achievements[0] });
+                    });
+                });
+            });
+        });
+    } else {
+        res.redirect('/login');
     }
 });
 

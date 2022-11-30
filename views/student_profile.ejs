@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Profile</title>
+</head>
+<body>
+    <!-- show info about student with result and achievements -->
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+                <h1>Profile</h1>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Full name:</th>
+                            <td>
+                                <%= student.name %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Group:</th>
+                            <td>
+                                <%= group %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Results:</th>
+                            <td>
+                                <ul>
+                                    <% for (let i = 0; i < results.length; i++) { %>
+                                    <li>
+                                        <%= results[i].result %>
+                                    </li>
+                                    <% } %>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Achievements:</th>
+                            <td>
+                                <ul>
+                                    <% for (let i = 0; i < achievements.length; i++) { %>
+                                    <li>
+                                        <%= achievements[i].title %>
+                                        <p><%= achievements[i].description %></p>
+                                    </li>
+                                    <% } %>
+                                </ul>
+                            </td>
+                        </tr>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+</body>
+</html>

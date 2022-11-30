@@ -113,6 +113,15 @@ end$$
 delimiter ;
 # call get_questions_for_test(3);
 
+-- procedure that returns achievements for the given student id
+delimiter $$
+create procedure get_achievements_for_student (in student_id int)
+begin 
+    select * from achievement where id
+                                 in (select achievement_id from achievement_student where achievement_student.student_id = student_id);
+end$$
+delimiter ;
+
 
 -- procedure that returns the best n students by sum of all results
 delimiter $$
@@ -213,7 +222,7 @@ delimiter $$
 create trigger give_ace_achievement after insert on test_student
 for each row
 begin
-    if new.result = 1 then
+    if new.result >= 100 then
         insert into achievement_student (achievement_id, student_id) values (2, new.student_id);
     end if;
 end$$

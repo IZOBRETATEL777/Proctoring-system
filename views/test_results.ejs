@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,10 +9,39 @@
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Test results</title>
 </head>
+
 <body>
-    <h1>Test results</h1>
-    <p>Correct answers: <%= correct_answers %></p>
-    <p>Number of questions: <%= total_questions %></p>
-    <p>Percentage: <%= (correct_answers / total_questions) * 100 %>%</p>
+    <!-- central container -->
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+                <h1>Test results</h1>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Correct answers:</th>
+                            <td>
+                                <%= correct_answers %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>The number of questions:</th>
+                            <td>
+                                <%= total_questions %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Percentage:</th>
+                            <td>
+                                <%= (correct_answers / total_questions) * 100 %>%
+                            </td>
+                        </tr>
+                        </tbody>
+                </table>
+                <a href="/student_profile" class="btn btn-primary">Profile</a>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
