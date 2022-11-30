@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,6 +9,7 @@
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Dashboard</title>
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">Hello, <%= name %></a>
@@ -16,24 +18,23 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a class="nav-link" href="/logout">Logout</a>
+            <div class="navbar-nav ml-auto">
+                <a class="nav-item nav-link" href="/logout">Logout</a>
             </div>
         </div>
     </nav>
-    <h1>Dashboard</h1>
+    <br><br>
     <div class="container">
         <div class="row">
-            <div class="col">
-                <a href="/add_student" class="btn btn-primary">Add student</a>
-            </div>
-            <div class="col">
-                <a href="/add_question" class="btn btn-primary">Add question</a>
-            </div>
-            <div class="col">
-                <a href="/question_list" class="btn btn-primary">Assign test</a>
+            <div class="col-4">
+                <div class="list-group">
+                    <a href="/add_student" class="list-group-item list-group-item-action">Add student</a>
+                    <a href="/add_question" class="list-group-item list-group-item-action">Add question</a>
+                    <a href="/question_list" class="list-group-item list-group-item-action">Create test</a>
+                </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>
